@@ -10,9 +10,11 @@ body {
     color: var(--stark-cyan);
     font-family: 'Segoe UI', 'Courier New', monospace;
     text-transform: uppercase;
+    /* Evita que iOS cambie el tamaño del texto arbitrariamente */
+    -webkit-text-size-adjust: 100%;
 }
 
-/* --- CAPAS DE FONDO (Sin cambios, funcionan bien) --- */
+/* --- CAPAS DE FONDO --- */
 #scanline {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -34,11 +36,9 @@ body {
 
 #canvas-3d { 
     position: fixed; 
-    top: 0; 
-    left: 0; 
+    top: 0; left: 0; 
     z-index: 10; 
-    width: 100%; 
-    height: 100%; 
+    width: 100%; height: 100%; 
 }
 
 /* --- MARCO HUD DINÁMICO --- */
@@ -48,92 +48,94 @@ body {
     z-index: 50;
     pointer-events: none;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 20px; /* Margen base */
+    /* Respeta el Notch y la Dynamic Island automáticamente */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 .corner-marker {
     position: absolute;
-    width: 20px; height: 20px;
+    width: 25px; height: 25px;
     border: 2px solid var(--stark-cyan);
 }
+/* Posicionamiento de esquinas relativo al área segura */
 .tl { top: 20px; left: 20px; border-right: 0; border-bottom: 0; }
 .tr { top: 20px; right: 20px; border-left: 0; border-bottom: 0; }
 .bl { bottom: 20px; left: 20px; border-right: 0; border-top: 0; }
 .br { bottom: 20px; right: 20px; border-left: 0; border-top: 0; }
 
-/* --- BLOQUES DE TEXTO --- */
+/* --- BLOQUES DE TEXTO (CORREGIDO PARA NO CHOCAR) --- */
 .top-left-data {
-    position: relative; /* Cambiado de absolute a relative para fluir en el flex */
-    margin-top: 35px;
-    margin-left: 15px;
-    font-size: clamp(0.7rem, 2.5vw, 1rem); /* Tamaño fluido */
-    line-height: 1.4;
-    letter-spacing: 1px;
-    text-shadow: 0 0 8px var(--stark-glow);
+    position: absolute;
+    /* El margen de 60px asegura que no toque la esquina de 20px */
+    top: 60px; 
+    left: 45px;
+    font-size: clamp(0.9rem, 3vw, 1.2rem); 
+    line-height: 1.5;
+    letter-spacing: 1.5px;
+    text-shadow: 0 0 10px var(--stark-glow);
 }
 
 .bottom-left-data {
-    position: relative;
-    margin-bottom: 35px;
-    margin-left: 15px;
-    font-size: clamp(0.6rem, 2vw, 0.8rem);
-    opacity: 0.8;
+    position: absolute;
+    bottom: 60px; 
+    left: 45px;
+    font-size: clamp(0.75rem, 2vw, 0.95rem);
+    line-height: 1.4;
+    opacity: 0.85;
 }
 
-/* --- LISTA DE PROPIEDADES (Ajustada para no tapar el centro) --- */
+/* --- LISTA DE PROPIEDADES (DERECHA) --- */
 .trait-list {
     position: absolute;
     top: 50%;
-    right: 15px;
+    right: 45px; /* Separado del marco derecho */
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    max-width: 40%; /* Evita que ocupe toda la pantalla */
+    gap: 15px;
+    max-width: 280px; 
+    width: 35%;
 }
 
 .trait-tag {
-    background: rgba(0, 251, 255, 0.08);
-    border-left: 3px solid var(--stark-cyan);
-    padding: 8px 12px;
-    font-size: clamp(0.6rem, 2vw, 0.9rem);
+    background: rgba(0, 251, 255, 0.12);
+    border-left: 4px solid var(--stark-cyan);
+    padding: 12px 18px;
+    font-size: clamp(0.85rem, 2vw, 1.1rem);
     font-weight: bold;
     opacity: 0;
-    transform: translateX(20px);
-    transition: all 0.5s ease-out;
-    backdrop-filter: blur(2px);
+    transform: translateX(30px);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(5px);
 }
 
 .trait-tag.show { opacity: 1; transform: translateX(0); }
-.trait-tag span { font-size: 0.55rem; display: block; opacity: 0.7; }
+.trait-tag span { font-size: 0.65rem; display: block; opacity: 0.7; margin-bottom: 2px; }
 
-/* --- OPTIMIZACIÓN CELULAR VERTICAL (PORTRAIT) --- */
-@media (max-width: 480px) and (orientation: portrait) {
+/* --- OPTIMIZACIÓN LANDSCAPE (HORIZONAL) --- */
+@media (orientation: landscape) {
+    .top-left-data { 
+        top: 35px; 
+        left: 60px; 
+        max-width: 40%;
+    }
+    .bottom-left-data { 
+        bottom: 35px; 
+        left: 60px; 
+    }
     .trait-list {
-        right: 10px;
-        gap: 6px;
+        right: 60px; /* Más aire en pantallas anchas como Pro Max */
+        gap: 8px;
+        width: 30%;
     }
     .trait-tag {
-        padding: 5px 8px;
-        border-left-width: 2px;
+        padding: 8px 14px;
+        font-size: clamp(0.75rem, 1.5vw, 0.95rem);
     }
 }
 
-/* --- OPTIMIZACIÓN CELULAR HORIZONTAL (LANDSCAPE) --- */
-@media (orientation: landscape) and (max-height: 500px) {
-    .hud-frame { padding: 10px; }
-    .top-left-data { margin-top: 15px; }
-    .bottom-left-data { margin-bottom: 15px; }
-    
-    .trait-list {
-        right: 10px;
-        gap: 5px;
-    }
-    .trait-tag {
-        padding: 4px 10px;
-        font-size: 0.7rem;
-    }
+/* --- AJUSTE PARA PANTALLAS MUY PEQUEÑAS --- */
+@media (max-height: 420px) {
+    .trait-list { gap: 5px; }
+    .trait-tag { padding: 5px 10px; }
 }
