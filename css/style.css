@@ -1,13 +1,10 @@
-/* --- VARIABLES GLOBALES --- */
 :root {
     --stark-cyan: #00fbff;
     --stark-glow: rgba(0, 251, 255, 0.3);
 }
 
-/* --- RESET Y BASE --- */
 body {
     margin: 0;
-    padding: 0;
     overflow: hidden;
     background-color: #01080a;
     color: var(--stark-cyan);
@@ -15,7 +12,7 @@ body {
     text-transform: uppercase;
 }
 
-/* --- EFECTOS VISUALES (Fondo y Scanlines) --- */
+/* --- CAPAS DE FONDO (Sin cambios, funcionan bien) --- */
 #scanline {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -30,8 +27,8 @@ body {
     top: 0; left: 0; width: 100%; height: 100%;
     background-image: linear-gradient(var(--stark-glow) 1px, transparent 1px),
                       linear-gradient(90deg, var(--stark-glow) 1px, transparent 1px);
-    background-size: 80px 80px;
-    opacity: 0.1;
+    background-size: 50px 50px;
+    opacity: 0.15;
     z-index: 1;
 }
 
@@ -40,109 +37,103 @@ body {
     top: 0; 
     left: 0; 
     z-index: 10; 
+    width: 100%; 
+    height: 100%; 
 }
 
-/* --- MARCOS DEL HUD --- */
+/* --- MARCO HUD DINÁMICO --- */
 .hud-frame {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     z-index: 50;
     pointer-events: none;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px; /* Margen base */
 }
 
 .corner-marker {
     position: absolute;
-    width: 30px;
-    height: 30px;
+    width: 20px; height: 20px;
     border: 2px solid var(--stark-cyan);
 }
+.tl { top: 20px; left: 20px; border-right: 0; border-bottom: 0; }
+.tr { top: 20px; right: 20px; border-left: 0; border-bottom: 0; }
+.bl { bottom: 20px; left: 20px; border-right: 0; border-top: 0; }
+.br { bottom: 20px; right: 20px; border-left: 0; border-top: 0; }
 
-/* --- 1. CONFIGURACIÓN PARA PC (Escritorio) --- */
-.hud-frame { padding: 40px; }
-.tl { top: 40px; left: 40px; border-right: 0; border-bottom: 0; }
-.tr { top: 40px; right: 40px; border-left: 0; border-bottom: 0; }
-.bl { bottom: 40px; left: 40px; border-right: 0; border-top: 0; }
-.br { bottom: 40px; right: 40px; border-left: 0; border-top: 0; }
-
+/* --- BLOQUES DE TEXTO --- */
 .top-left-data {
-    position: absolute;
-    top: 60px; left: 90px;
-    font-size: 13px; /* Tamaño PC */
+    position: relative; /* Cambiado de absolute a relative para fluir en el flex */
+    margin-top: 35px;
+    margin-left: 15px;
+    font-size: clamp(0.7rem, 2.5vw, 1rem); /* Tamaño fluido */
     line-height: 1.4;
     letter-spacing: 1px;
+    text-shadow: 0 0 8px var(--stark-glow);
 }
 
 .bottom-left-data {
-    position: absolute;
-    bottom: 60px; left: 90px;
-    font-size: 11px; /* Tamaño PC */
+    position: relative;
+    margin-bottom: 35px;
+    margin-left: 15px;
+    font-size: clamp(0.6rem, 2vw, 0.8rem);
     opacity: 0.8;
 }
 
+/* --- LISTA DE PROPIEDADES (Ajustada para no tapar el centro) --- */
 .trait-list {
     position: absolute;
-    top: 50%; right: 10%;
+    top: 50%;
+    right: 15px;
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
+    max-width: 40%; /* Evita que ocupe toda la pantalla */
 }
 
 .trait-tag {
-    background: rgba(0, 251, 255, 0.05);
-    border-left: 2px solid var(--stark-cyan);
-    padding: 8px 15px;
-    font-size: 14px; /* Tamaño PC */
-    font-weight: 600;
+    background: rgba(0, 251, 255, 0.08);
+    border-left: 3px solid var(--stark-cyan);
+    padding: 8px 12px;
+    font-size: clamp(0.6rem, 2vw, 0.9rem);
+    font-weight: bold;
     opacity: 0;
-    transform: translateX(50px);
-    transition: all 0.5s ease;
+    transform: translateX(20px);
+    transition: all 0.5s ease-out;
+    backdrop-filter: blur(2px);
 }
 
-.trait-tag span { font-size: 9px; display: block; opacity: 0.6; }
 .trait-tag.show { opacity: 1; transform: translateX(0); }
+.trait-tag span { font-size: 0.55rem; display: block; opacity: 0.7; }
 
-
-/* --- 2. CONFIGURACIÓN PARA TABLETS (Max 1024px) --- */
-@media (max-width: 1024px) {
-    .top-left-data { font-size: 30px; }
-    .trait-tag { font-size: 22px; }
-    .bottom-left-data { font-size: px; }
-    .trait-list { right: 5%; }
+/* --- OPTIMIZACIÓN CELULAR VERTICAL (PORTRAIT) --- */
+@media (max-width: 480px) and (orientation: portrait) {
+    .trait-list {
+        right: 10px;
+        gap: 6px;
+    }
+    .trait-tag {
+        padding: 5px 8px;
+        border-left-width: 2px;
+    }
 }
 
-
-/* --- 3. CONFIGURACIÓN PARA CELULARES (Max 600px) --- */
-@media (max-width: 600px) {
-    .hud-frame { padding: 20px; }
+/* --- OPTIMIZACIÓN CELULAR HORIZONTAL (LANDSCAPE) --- */
+@media (orientation: landscape) and (max-height: 500px) {
+    .hud-frame { padding: 10px; }
+    .top-left-data { margin-top: 15px; }
+    .bottom-left-data { margin-bottom: 15px; }
     
-    .corner-marker { width: 15px; height: 15px; }
-    .tl { top: 20px; left: 20px; }
-    .tr { top: 20px; right: 20px; }
-    .bl { bottom: 20px; left: 20px; }
-    .br { bottom: 20px; right: 20px; }
-
-    .top-left-data {
-        top: 40px; left: 45px;
-        font-size: 15px; /* Tamaño Celular */
-    }
-
-    .bottom-left-data {
-        bottom: 40px; left: 45px;
-        font-size: 11px; /* Tamaño Celular */
-        max-width: 240px;
-    }
-
     .trait-list {
-        right: 5%;
-        gap: 10px;
+        right: 10px;
+        gap: 5px;
     }
-
     .trait-tag {
-        font-size: 12px; /* Tamaño Celular */
-        padding: 5px 10px;
+        padding: 4px 10px;
+        font-size: 0.7rem;
     }
-
-    .trait-tag span { font-size: 7px; }
 }
