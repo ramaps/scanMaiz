@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ADN - Precision Scan</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="grid"></div>
+    <div id="scanline"></div>
+
+    <div class="hud-frame">
+        <div class="corner-marker tl"></div>
+        <div class="corner-marker tr"></div>
+        <div class="corner-marker bl"></div>
+        <div class="corner-marker br"></div>
+
+        <div class="top-left-data">
+            ID: DK 72-20 PRO4<br>
+            STAT: <span style="color:white">ANALYZING GENOME...</span><br>
+            SEQ: <span id="seq">0.0000</span>
+        </div>
+
+        <div class="trait-list">
+            <div class="trait-tag" id="t1"><span>PROPERTY 01</span>RESISTENCIA_SISTÉMICA</div>
+            <div class="trait-tag" id="t2"><span>PROPERTY 02</span>ALTO_POTENCIAL_Y_RENDIMIENTO</div>
+            <div class="trait-tag" id="t3"><span>PROPERTY 03</span>MAX_LLENADO_GRANO</div>
+            <div class="trait-tag" id="t4"><span>PROPERTY 04</span>TECNOLOGÍA_VTPRO4</div>
+        </div>
+
+        <div class="bottom-left-data">
+            AGROQUIMICOS DEL NORTE S.A. // DIV. SEEDS<br>
+            ENCRYPTED_LINK: ACTIVE | SIGNAL: 5/5<br>
+            EST_YIELD_OPTIMIZATION: +24.8%<br>
+            CREATOR: STEFANUTTI RAMIRO ® 2026
+        </div>
+    </div>
+
+    <div id="canvas-3d"></div>
+
+    <script type="importmap">
+        { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+    </script>
+    <script type="module" src="js/script.js"></script>
+</body>
+</html>
