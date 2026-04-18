@@ -10,8 +10,77 @@ body {
     color: var(--stark-cyan);
     font-family: 'Segoe UI', 'Courier New', monospace;
     text-transform: uppercase;
-    /* Evita que iOS cambie el tamaño del texto arbitrariamente */
     -webkit-text-size-adjust: 100%;
+}
+
+/* --- PANTALLA DE CARGA (CORREGIDA) --- */
+#loader-wrapper {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #01080a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.8s ease-in-out;
+}
+
+.loader-container { 
+    text-align: center; 
+    color: var(--stark-cyan); 
+}
+
+.circular-loader { 
+    width: clamp(150px, 40vw, 200px); 
+    height: clamp(150px, 40vw, 200px); 
+    transform: rotate(-90deg);
+    /* CRÍTICO: Evita que el brillo se corte en los bordes del SVG */
+    overflow: visible !important; 
+}
+
+.loader-bg { 
+    fill: none; 
+    stroke: rgba(0, 251, 255, 0.1); 
+    stroke-width: 6; 
+}
+
+.loader-path {
+    fill: none;
+    stroke: var(--stark-cyan);
+    stroke-width: 6; 
+    stroke-linecap: round;
+    stroke-dasharray: 283;
+    stroke-dashoffset: 283;
+    /* Resplandor más amplio y suave */
+    filter: drop-shadow(0 0 15px var(--stark-cyan));
+    transition: stroke-dashoffset 0.1s linear;
+}
+
+#percent {
+    font-size: clamp(2.5rem, 8vw, 4rem); 
+    margin-top: 20px;
+    font-weight: 900;
+    text-shadow: 0 0 15px var(--stark-glow);
+    letter-spacing: -2px;
+}
+
+.loader-text {
+    font-size: clamp(1rem, 2vw, 1.1rem);
+    letter-spacing: 6px;
+    margin-top: 15px;
+    opacity: 0.9;
+    font-weight: 600;
+    animation: pulse-stark 2s infinite ease-in-out;
+}
+
+@keyframes pulse-stark {
+    0%, 100% { opacity: 0.9; filter: brightness(1); }
+    50% { opacity: 0.4; filter: brightness(1.4); }
+}
+
+.loader-hidden { 
+    opacity: 0; 
+    pointer-events: none; 
 }
 
 /* --- CAPAS DE FONDO --- */
@@ -48,7 +117,6 @@ body {
     z-index: 50;
     pointer-events: none;
     box-sizing: border-box;
-    /* Respeta el Notch y la Dynamic Island automáticamente */
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
@@ -57,16 +125,14 @@ body {
     width: 25px; height: 25px;
     border: 2px solid var(--stark-cyan);
 }
-/* Posicionamiento de esquinas relativo al área segura */
+
 .tl { top: 20px; left: 20px; border-right: 0; border-bottom: 0; }
 .tr { top: 20px; right: 20px; border-left: 0; border-bottom: 0; }
 .bl { bottom: 20px; left: 20px; border-right: 0; border-top: 0; }
 .br { bottom: 20px; right: 20px; border-left: 0; border-top: 0; }
 
-/* --- BLOQUES DE TEXTO (CORREGIDO PARA NO CHOCAR) --- */
 .top-left-data {
     position: absolute;
-    /* El margen de 60px asegura que no toque la esquina de 20px */
     top: 60px; 
     left: 45px;
     font-size: clamp(0.9rem, 3vw, 1.2rem); 
@@ -84,11 +150,10 @@ body {
     opacity: 0.85;
 }
 
-/* --- LISTA DE PROPIEDADES (DERECHA) --- */
 .trait-list {
     position: absolute;
     top: 50%;
-    right: 25px; /* Separado del marco derecho */
+    right: 25px; 
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
@@ -105,10 +170,6 @@ body {
     font-weight: bold;
     line-height: 1.25;
     box-sizing: border-box;
-    max-inline-size: 100%;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    word-break: break-word;
     opacity: 0;
     transform: translateX(30px);
     transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -118,31 +179,14 @@ body {
 .trait-tag.show { opacity: 1; transform: translateX(0); }
 .trait-tag span { font-size: 0.55rem; display: block; opacity: 0.7; margin-bottom: 2px; }
 
-/* --- OPTIMIZACIÓN LANDSCAPE (HORIZONAL) --- */
+/* --- RESPONSIVE OPTIMIZATIONS --- */
 @media (orientation: landscape) {
-    .top-left-data { 
-        top: 35px; 
-        left: 60px; 
-        max-width: 50%;
-        font-size: clamp(0.5rem, 1.5vw, 0.85rem);
-    }
-    .bottom-left-data { 
-        bottom: 35px; 
-        left: 40px; 
-        font-size: clamp(0.5rem, 1.5vw, 0.85rem);
-    }
-    .trait-list {
-        right: 60px; /* Más aire en pantallas anchas como Pro Max */
-        gap: 8px;
-        width: 60%;
-    }
-    .trait-tag {
-        padding: 8px 14px;
-        font-size: clamp(0.5rem, 1.5vw, 0.85rem);
-    }
+    .top-left-data { top: 35px; left: 60px; max-width: 50%; font-size: clamp(0.5rem, 1.5vw, 0.85rem); }
+    .bottom-left-data { bottom: 35px; left: 40px; font-size: clamp(0.5rem, 1.5vw, 0.85rem); }
+    .trait-list { right: 60px; gap: 8px; width: 60%; }
+    .trait-tag { padding: 8px 14px; font-size: clamp(0.5rem, 1.5vw, 0.85rem); }
 }
 
-/* --- AJUSTE PARA PANTALLAS MUY PEQUEÑAS --- */
 @media (max-height: 420px) {
     .trait-list { gap: 5px; }
     .trait-tag { padding: 5px 10px; }

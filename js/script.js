@@ -39,7 +39,7 @@ const corn = new THREE.Mesh(geometry, material);
 corn.scale.set(0.65, 0.65, 0.65);
 scene.add(corn);
 
-// NÚCLEO (ARC REACTOR STYLE)
+// NÚCLEO (ESTILO ARC REACTOR)
 const core = new THREE.Mesh(
     new THREE.SphereGeometry(0.3, 32, 32),
     new THREE.MeshBasicMaterial({ color: 0xffffff })
@@ -63,11 +63,11 @@ const seqText = document.getElementById('seq');
 function animate() {
     requestAnimationFrame(animate);
     
-    // Rotación del maíz
+    // Rotación suave del maíz
     corn.rotation.y += 0.01;
     corn.rotation.x = Math.sin(Date.now() * 0.0005) * 0.15;
     
-    // Texto de secuencia aleatoria
+    // Simulación de datos genéticos
     if (seqText) {
         seqText.innerText = Math.random().toFixed(4);
     }
@@ -75,17 +75,46 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-// REVELAR ETIQUETAS SECUENCIALMENTE
-setTimeout(() => {
-    for(let i = 1; i <= 4; i++) {
-        setTimeout(() => {
-            const el = document.getElementById(`t${i}`);
-            if (el) el.classList.add('show');
-        }, i * 500);
-    }
-}, 1200);
+// --- SISTEMA DE CARGA (SILENCIOSO Y MEJORADO) ---
+const loaderWrapper = document.getElementById('loader-wrapper');
+const loaderPath = document.querySelector('.loader-path');
+const percentText = document.getElementById('percent');
 
-animate();
+function revealLabels() {
+    setTimeout(() => {
+        for(let i = 1; i <= 4; i++) {
+            setTimeout(() => {
+                const el = document.getElementById(`t${i}`);
+                if (el) el.classList.add('show');
+            }, i * 500);
+        }
+    }, 500);
+}
+
+let loadProgress = 0;
+// Intervalo de 100ms para una carga más pausada y técnica
+const interval = setInterval(() => {
+    // Incrementos más pequeños para estirar la animación
+    loadProgress += Math.random() * 4.5; 
+    
+    if (loadProgress >= 100) {
+        loadProgress = 100;
+        clearInterval(interval);
+        
+        // ELIMINADO: Ya no hay llamada a playStartAudio();
+        
+        setTimeout(() => {
+            if (loaderWrapper) loaderWrapper.classList.add('loader-hidden');
+            revealLabels();
+            animate();
+        }, 800);
+    }
+    
+    // Sincronización con el nuevo viewBox 120 (circunferencia ~283)
+    const offset = 283 - (loadProgress / 100) * 283;
+    if (loaderPath) loaderPath.style.strokeDashoffset = offset;
+    if (percentText) percentText.innerText = Math.floor(loadProgress) + "%";
+}, 100);
 
 // RESPONSIVE
 window.addEventListener('resize', () => {

@@ -3,10 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>ADN - Precision Scan</title>
+    <title>ADN - Scan</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
+    <div id="loader-wrapper">
+        <div class="loader-container">
+            <svg class="circular-loader" viewBox="0 0 120 120">
+                <circle class="loader-bg" cx="60" cy="60" r="45"></circle>
+                <circle class="loader-path" cx="60" cy="60" r="45"></circle>
+            </svg>
+            <div class="loader-text">ESCANEANDO SEMILLA...</div>
+            <div id="percent">0%</div>
+        </div>
+    </div>
 
     <div id="grid"></div>
     <div id="scanline"></div>
