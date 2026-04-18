@@ -88,20 +88,20 @@ body {
 .trait-list {
     position: absolute;
     top: 50%;
-    right: 45px; /* Separado del marco derecho */
+    right: 25px; /* Separado del marco derecho */
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
     gap: 15px;
-    max-width: 280px; 
-    width: 65%;
+    max-width: 250px; 
+    width: 55%;
 }
 
 .trait-tag {
     background: rgba(0, 251, 255, 0.12);
     border-left: 4px solid var(--stark-cyan);
-    padding: 12px 18px;
-    font-size: clamp(0.85rem, 2vw, 1.1rem);
+    padding: 12px 10px;
+    font-size: clamp(0.75rem, 2vw, 1.1rem);
     font-weight: bold;
     line-height: 1.25;
     box-sizing: border-box;
@@ -116,27 +116,29 @@ body {
 }
 
 .trait-tag.show { opacity: 1; transform: translateX(0); }
-.trait-tag span { font-size: 0.65rem; display: block; opacity: 0.7; margin-bottom: 2px; }
+.trait-tag span { font-size: 0.55rem; display: block; opacity: 0.7; margin-bottom: 2px; }
 
 /* --- OPTIMIZACIÓN LANDSCAPE (HORIZONAL) --- */
 @media (orientation: landscape) {
     .top-left-data { 
         top: 35px; 
         left: 60px; 
-        max-width: 40%;
+        max-width: 50%;
+        font-size: clamp(0.5rem, 1.5vw, 0.85rem);
     }
     .bottom-left-data { 
         bottom: 35px; 
-        left: 60px; 
+        left: 40px; 
+        font-size: clamp(0.5rem, 1.5vw, 0.85rem);
     }
     .trait-list {
         right: 60px; /* Más aire en pantallas anchas como Pro Max */
         gap: 8px;
-        width: 30%;
+        width: 60%;
     }
     .trait-tag {
         padding: 8px 14px;
-        font-size: clamp(0.75rem, 1.5vw, 0.95rem);
+        font-size: clamp(0.5rem, 1.5vw, 0.85rem);
     }
 }
 
