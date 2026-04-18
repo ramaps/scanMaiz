@@ -94,7 +94,7 @@ body {
     flex-direction: column;
     gap: 15px;
     max-width: 280px; 
-    width: 35%;
+    width: 65%;
 }
 
 .trait-tag {
@@ -103,6 +103,12 @@ body {
     padding: 12px 18px;
     font-size: clamp(0.85rem, 2vw, 1.1rem);
     font-weight: bold;
+    line-height: 1.25;
+    box-sizing: border-box;
+    max-inline-size: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
     opacity: 0;
     transform: translateX(30px);
     transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
