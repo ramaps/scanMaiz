@@ -1,8 +1,10 @@
+/* --- VARIABLES GLOBALES --- */
 :root {
     --stark-cyan: #00fbff;
     --stark-glow: rgba(0, 251, 255, 0.3);
 }
 
+/* --- RESET Y BASE --- */
 body {
     margin: 0;
     padding: 0;
@@ -13,7 +15,7 @@ body {
     text-transform: uppercase;
 }
 
-/* --- CAPAS DE EFECTO VISUAL --- */
+/* --- EFECTOS VISUALES (Fondo y Scanlines) --- */
 #scanline {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -40,88 +42,107 @@ body {
     z-index: 10; 
 }
 
-/* --- MARCOS HUD --- */
+/* --- MARCOS DEL HUD --- */
 .hud-frame {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     z-index: 50;
     pointer-events: none;
-    padding: clamp(20px, 4vw, 40px);
     box-sizing: border-box;
 }
 
 .corner-marker {
     position: absolute;
-    width: clamp(15px, 3vw, 30px);
-    height: clamp(15px, 3vw, 30px);
+    width: 30px;
+    height: 30px;
     border: 2px solid var(--stark-cyan);
 }
-.tl { top: clamp(20px, 4vw, 40px); left: clamp(20px, 4vw, 40px); border-right: 0; border-bottom: 0; }
-.tr { top: clamp(20px, 4vw, 40px); right: clamp(20px, 4vw, 40px); border-left: 0; border-bottom: 0; }
-.bl { bottom: clamp(20px, 4vw, 40px); left: clamp(20px, 4vw, 40px); border-right: 0; border-top: 0; }
-.br { bottom: clamp(20px, 4vw, 40px); right: clamp(20px, 4vw, 40px); border-left: 0; border-top: 0; }
 
-/* --- BLOQUES DE DATOS CON ESCALADO DINÁMICO --- */
+/* --- 1. CONFIGURACIÓN PARA PC (Escritorio) --- */
+.hud-frame { padding: 40px; }
+.tl { top: 40px; left: 40px; border-right: 0; border-bottom: 0; }
+.tr { top: 40px; right: 40px; border-left: 0; border-bottom: 0; }
+.bl { bottom: 40px; left: 40px; border-right: 0; border-top: 0; }
+.br { bottom: 40px; right: 40px; border-left: 0; border-top: 0; }
+
 .top-left-data {
     position: absolute;
-    top: clamp(40px, 7vw, 70px);
-    left: clamp(40px, 8vw, 90px);
-    font-size: clamp(9px, 0.8vw, 12px);
+    top: 60px; left: 90px;
+    font-size: 13px; /* Tamaño PC */
     line-height: 1.4;
     letter-spacing: 1px;
 }
 
 .bottom-left-data {
     position: absolute;
-    bottom: clamp(40px, 7vw, 70px); 
-    left: clamp(40px, 8vw, 90px);
-    text-align: left;
-    font-size: clamp(8px, 0.7vw, 10px);
+    bottom: 60px; left: 90px;
+    font-size: 11px; /* Tamaño PC */
     opacity: 0.8;
 }
 
-/* --- LISTADO DE PROPIEDADES --- */
 .trait-list {
     position: absolute;
-    top: 50%;
-    right: 5%;
+    top: 50%; right: 10%;
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    gap: clamp(10px, 2vw, 20px);
-    max-width: 250px;
+    gap: 20px;
 }
 
 .trait-tag {
     background: rgba(0, 251, 255, 0.05);
     border-left: 2px solid var(--stark-cyan);
-    padding: clamp(5px, 1vw, 8px) clamp(10px, 1.5vw, 15px);
-    font-size: clamp(10px, 1vw, 13px);
+    padding: 8px 15px;
+    font-size: 14px; /* Tamaño PC */
     font-weight: 600;
     opacity: 0;
     transform: translateX(50px);
     transition: all 0.5s ease;
 }
 
-.trait-tag.show { 
-    opacity: 1; 
-    transform: translateX(0); 
+.trait-tag span { font-size: 9px; display: block; opacity: 0.6; }
+.trait-tag.show { opacity: 1; transform: translateX(0); }
+
+
+/* --- 2. CONFIGURACIÓN PARA TABLETS (Max 1024px) --- */
+@media (max-width: 1024px) {
+    .top-left-data { font-size: 30px; }
+    .trait-tag { font-size: 22px; }
+    .bottom-left-data { font-size: px; }
+    .trait-list { right: 5%; }
 }
 
-.trait-tag span { 
-    font-size: clamp(7px, 0.6vw, 9px); 
-    display: block; 
-    opacity: 0.6; 
-}
 
-/* --- MEDIA QUERY PARA AJUSTES FINOS EN MÓVILES --- */
+/* --- 3. CONFIGURACIÓN PARA CELULARES (Max 600px) --- */
 @media (max-width: 600px) {
-    .trait-list {
-        right: 8%; /* Un poco más de margen en pantallas muy angostas */
-    }
+    .hud-frame { padding: 20px; }
     
-    /* Evita que el texto de agroquímicos se rompa en demasiadas líneas */
-    .bottom-left-data {
-        max-width: 180px;
+    .corner-marker { width: 15px; height: 15px; }
+    .tl { top: 20px; left: 20px; }
+    .tr { top: 20px; right: 20px; }
+    .bl { bottom: 20px; left: 20px; }
+    .br { bottom: 20px; right: 20px; }
+
+    .top-left-data {
+        top: 40px; left: 45px;
+        font-size: 15px; /* Tamaño Celular */
     }
+
+    .bottom-left-data {
+        bottom: 40px; left: 45px;
+        font-size: 11px; /* Tamaño Celular */
+        max-width: 240px;
+    }
+
+    .trait-list {
+        right: 5%;
+        gap: 10px;
+    }
+
+    .trait-tag {
+        font-size: 12px; /* Tamaño Celular */
+        padding: 5px 10px;
+    }
+
+    .trait-tag span { font-size: 7px; }
 }
