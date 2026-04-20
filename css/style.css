@@ -42,8 +42,8 @@ body {
     background-color: var(--stark-cyan); /* Usa tu variable de color */
     
     /* Ruta a la carpeta img */
-    -webkit-mask-image: url('../img/dekalb.svg');
-    mask-image: url('../img/dekalb.svg');
+    -webkit-mask-image: url('../img/dekalb_logo.svg');
+    mask-image: url('../img/dekalb_logo.svg');
     
     -webkit-mask-size: contain;
     mask-size: contain;
