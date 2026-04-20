@@ -3,7 +3,6 @@
     --stark-glow: rgba(0, 251, 255, 0.3);
 
     /* --- CONTROLES MANUALES --- */
-    /* Cambia estos valores para agrandar o achicar (ej: 1.2 para +20%) */
     --logo-scale: 1.0;
     --loader-scale: 1.0;
     --text-scale: 1.0;
@@ -14,7 +13,7 @@ body {
     overflow: hidden;
     background-color: #01080a;
     color: var(--stark-cyan);
-    font-family: 'Segoe UI', 'Courier New', monospace;
+    font-family: 'Segoe UI', 'Courier New', monospace; /* Tipografía base */
     text-transform: uppercase;
     -webkit-text-size-adjust: 100%;
 }
@@ -46,7 +45,7 @@ body {
 
 /* LOGO DEKALB ADAPTABLE */
 .seed-icon-header {
-    width: calc(25vh * var(--logo-scale)); /* Basado en el alto para no chocar */
+    width: calc(25vh * var(--logo-scale));
     max-width: 160px;
     height: calc(10vh * var(--logo-scale));
     margin-bottom: 2vh;
@@ -55,7 +54,6 @@ body {
     -webkit-mask-image: url('../img/dekalb_logo.svg');
     mask-image: url('../img/dekalb_logo.svg');
     -webkit-mask-size: contain;
-    mask-image-size: contain;
     mask-repeat: no-repeat;
     mask-position: center;
 
@@ -92,14 +90,15 @@ body {
     transition: stroke-dashoffset 0.1s linear;
 }
 
-/* PORCENTAJE ADAPTABLE */
+/* --- PORCENTAJE (ESTILO ORIGINAL RECUPERADO) --- */
 #percent {
+    font-family: 'Segoe UI', 'Courier New', monospace; /* Restaurada */
     font-size: calc(9vh * var(--text-scale)); 
     margin-top: 1.5vh;
-    font-weight: 900;
-    text-shadow: 0 0 15px var(--stark-glow);
-    letter-spacing: -2px;
-    line-height: 1;
+    font-weight: 900; /* Super negrita */
+    text-shadow: 0 0 20px var(--stark-glow);
+    letter-spacing: -2px; /* Espaciado compacto original */
+    line-height: 0.9;
 }
 
 /* TEXTO ESCANEANDO... ADAPTABLE */
@@ -229,6 +228,7 @@ body {
 @media (max-height: 480px) {
     .loader-container { padding: 1vh 0; }
     .seed-icon-header { margin-bottom: 1vh; }
+    #percent { font-size: 11vh; } /* Un poco más grande para compensar el poco alto */
     .loader-text { letter-spacing: 2px; font-size: 3.5vh; }
     .trait-list { gap: 5px; }
     .trait-tag { padding: 5px 10px; }
