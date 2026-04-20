@@ -229,6 +229,30 @@ body {
     text-shadow: 0 0 15px var(--stark-cyan), 0 0 5px #ffffff !important;
 }
 
+/* Animación de deformación y parpadeo */
+@keyframes label-glitch {
+    0% { transform: translateX(0) skew(0deg); opacity: 1; }
+    10% { transform: translateX(-2px) skew(-2deg); opacity: 0.8; }
+    15% { transform: translateX(5px) skew(10deg); opacity: 0.5; color: #fff; }
+    17% { transform: translateX(0) skew(0deg); opacity: 1; }
+    90% { transform: translateX(0); }
+    95% { transform: translateX(-3px); color: var(--stark-cyan); }
+}
+
+/* Aplicar el glitch a las etiquetas activas */
+.trait-tag.show {
+    opacity: 1;
+    transform: translateX(0);
+    /* El glitch ocurre de forma aleatoria cada pocos segundos */
+    animation: label-glitch 4s infinite;
+}
+
+/* Desfasamos las animaciones para que no parpadeen todas al mismo tiempo */
+#t2 { animation-delay: 0.5s; }
+#t3 { animation-delay: 1.2s; }
+#t4 { animation-delay: 2.1s; }
+
+
 /* --- RESPONSIVE OPTIMIZATIONS --- */
 @media (orientation: landscape) {
     .top-left-data { top: 35px; left: 60px; max-width: 50%; font-size: clamp(0.5rem, 1.5vw, 0.85rem); }
