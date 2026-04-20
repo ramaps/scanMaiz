@@ -5,7 +5,7 @@
     /* --- CONTROLES MANUALES --- */
     --logo-scale: 1.0;
     --loader-scale: 1.0;
-    --text-scale: 0.7;
+    --text-scale: 0.1;
 }
 
 body {
