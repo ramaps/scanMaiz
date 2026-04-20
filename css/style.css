@@ -3,9 +3,9 @@
     --stark-glow: rgba(0, 251, 255, 0.3);
 
     /* --- CONTROLES MANUALES --- */
-    --logo-scale: 1.2; /* Ajustado para que no sea tan gigante */
+    --logo-scale: 1.5;
     --loader-scale: 1.0;
-    --text-scale: 0.6; /* Tamaño de porcentaje reducido como pediste */
+    --text-scale: 0.6;
 }
 
 body {
