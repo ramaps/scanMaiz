@@ -19,7 +19,7 @@ body {
     -webkit-text-size-adjust: 100%;
 }
 
-/* --- PANTALLA DE CARGA (Letra robusta) --- */
+/* --- PANTALLA DE CARGA --- */
 #loader-wrapper {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -76,12 +76,12 @@ body {
 
 /* --- PORCENTAJE (Letra Impact/Arial Black para el Loader) --- */
 #percent {
-    /* Forzamos la fuente robusta aquí para que NO se vea como la del maíz */
+    /* Forzamos la fuente para que NO se vea como la del maíz */
     font-family: 'Impact', 'Arial Black', sans-serif; 
     font-size: calc(8vh * var(--text-scale)); 
     margin-top: 1.5vh;
     font-weight: 900;
-    font-style: italic; /* Inclinada como te gustaba */
+    font-style: italic;
     text-shadow: 0 0 20px var(--stark-glow);
     letter-spacing: -1px;
     line-height: 0.9;
@@ -97,7 +97,6 @@ body {
 
 /* --- PÁGINA DEL MAÍZ / HUD (Letra Segoe UI) --- */
 .top-left-data, .bottom-left-data, .trait-tag {
-    /* Aseguramos que el contenido use la letra limpia del HUD */
     font-family: 'Segoe UI', sans-serif;
     font-weight: 600;
 }
