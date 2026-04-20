@@ -2,7 +2,7 @@
     --stark-cyan: #00fbff;
     --stark-glow: rgba(0, 251, 255, 0.3);
 
-    /* --- CONTROLES MANUALES (MANTENIDOS) --- */
+    /* --- CONTROLES MANUALES --- */
     --logo-scale: 1.5;
     --loader-scale: 1.0;
     --text-scale: 0.7;
@@ -13,13 +13,12 @@ body {
     overflow: hidden;
     background-color: #01080a;
     color: var(--stark-cyan);
-    /* CAMBIO: Fuente limpia para la página del maíz y HUD */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', 'Courier New', monospace; /* Tipografía base */
     text-transform: uppercase;
     -webkit-text-size-adjust: 100%;
 }
 
-/* --- PANTALLA DE CARGA --- */
+/* --- PANTALLA DE CARGA (RESPONSIVE) --- */
 #loader-wrapper {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -37,31 +36,47 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center; 
+    color: var(--stark-cyan);
     width: 100%;
     height: 100vh;
+    padding: 2vh 0;
+    box-sizing: border-box;
 }
 
+/* LOGO DEKALB ADAPTABLE */
 .seed-icon-header {
     width: calc(25vh * var(--logo-scale));
     max-width: 160px;
     height: calc(10vh * var(--logo-scale));
     margin-bottom: 2vh;
     background-color: var(--stark-cyan);
+    
     -webkit-mask-image: url('../img/dekalb_logo.svg');
     mask-image: url('../img/dekalb_logo.svg');
     -webkit-mask-size: contain;
     mask-repeat: no-repeat;
     mask-position: center;
+
     filter: drop-shadow(0 0 12px var(--stark-cyan));
     animation: pulse-stark 2s infinite ease-in-out;
 }
 
+/* ANILLO DE CARGA ADAPTABLE */
 .circular-loader { 
     width: calc(32vh * var(--loader-scale)); 
     height: calc(32vh * var(--loader-scale)); 
     max-width: 220px;
     max-height: 220px;
+    min-width: 110px;
+    min-height: 110px;
     transform: rotate(-90deg);
+    overflow: visible !important; 
+}
+
+.loader-bg { 
+    fill: none; 
+    stroke: rgba(0, 251, 255, 0.1); 
+    stroke-width: 6; 
 }
 
 .loader-path {
@@ -72,52 +87,117 @@ body {
     stroke-dasharray: 283;
     stroke-dashoffset: 283;
     filter: drop-shadow(0 0 15px var(--stark-cyan));
+    transition: stroke-dashoffset 0.1s linear;
 }
 
-/* --- PORCENTAJE (MANTIENE LA LETRA ROBUSTA) --- */
+/* --- PORCENTAJE --- */
 #percent {
-    /* Forzamos Impact/Arial Black solo aquí para que el 80% sea grueso */
-    font-family: 'Impact', 'Arial Black', sans-serif; 
+    font-family: 'Segoe UI', 'Segoe UI', 'Impact', 'Arial Black', sans-serif; /* Restaurada */
     font-size: calc(9vh * var(--text-scale)); 
     margin-top: 1.5vh;
-    font-weight: 900;
+    font-weight: 900; /* Super negrita */
     text-shadow: 0 0 20px var(--stark-glow);
-    letter-spacing: -2px;
+    letter-spacing: -2px; /* Espaciado compacto original */
     line-height: 0.9;
 }
 
+/* TEXTO ESCANEANDO... ADAPTABLE */
 .loader-text {
-    /* El texto de carga también con la fuente robusta */
-    font-family: 'Impact', sans-serif;
     font-size: calc(2.2vh * var(--text-scale));
     letter-spacing: 5px;
     margin-top: 1vh;
     opacity: 0.9;
+    font-weight: 600;
+    animation: pulse-stark 2s infinite ease-in-out;
 }
 
-/* --- CAPAS DE FONDO Y HUD (USAN LA LETRA DE BODY) --- */
-#scanline { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, transparent 50%, rgba(0, 251, 255, 0.05) 51%); background-size: 100% 4px; z-index: 100; pointer-events: none; }
-#grid { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(var(--stark-glow) 1px, transparent 1px), linear-gradient(90deg, var(--stark-glow) 1px, transparent 1px); background-size: 50px 50px; opacity: 0.15; z-index: 1; }
-#canvas-3d { position: fixed; top: 0; left: 0; z-index: 10; width: 100%; height: 100%; }
+@keyframes pulse-stark {
+    0%, 100% { opacity: 0.9; filter: brightness(1); }
+    50% { opacity: 0.4; filter: brightness(1.4); }
+}
 
-.hud-frame { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; pointer-events: none; }
-.corner-marker { position: absolute; width: 25px; height: 25px; border: 2px solid var(--stark-cyan); }
+.loader-hidden { 
+    opacity: 0; 
+    pointer-events: none; 
+}
+
+/* --- CAPAS DE FONDO --- */
+#scanline {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to bottom, transparent 50%, rgba(0, 251, 255, 0.05) 51%);
+    background-size: 100% 4px;
+    z-index: 100;
+    pointer-events: none;
+}
+
+#grid {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: linear-gradient(var(--stark-glow) 1px, transparent 1px),
+                      linear-gradient(90deg, var(--stark-glow) 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.15;
+    z-index: 1;
+}
+
+#canvas-3d { 
+    position: fixed; 
+    top: 0; left: 0; 
+    z-index: 10; 
+    width: 100%; height: 100%; 
+}
+
+/* --- MARCO HUD DINÁMICO --- */
+.hud-frame {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 50;
+    pointer-events: none;
+    box-sizing: border-box;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.corner-marker {
+    position: absolute;
+    width: 25px; height: 25px;
+    border: 2px solid var(--stark-cyan);
+}
+
 .tl { top: 20px; left: 20px; border-right: 0; border-bottom: 0; }
 .tr { top: 20px; right: 20px; border-left: 0; border-bottom: 0; }
 .bl { bottom: 20px; left: 20px; border-right: 0; border-top: 0; }
 .br { bottom: 20px; right: 20px; border-left: 0; border-top: 0; }
 
 .top-left-data {
-    position: absolute; top: 60px; left: 45px;
+    position: absolute;
+    top: 60px; 
+    left: 45px;
     font-size: clamp(0.9rem, 3vw, 1.2rem); 
     line-height: 1.5;
+    letter-spacing: 1.5px;
+    text-shadow: 0 0 10px var(--stark-glow);
+}
+
+.bottom-left-data {
+    position: absolute;
+    bottom: 60px; 
+    left: 45px;
+    font-size: clamp(0.75rem, 2vw, 0.95rem);
+    line-height: 1.4;
+    opacity: 0.85;
 }
 
 .trait-list {
-    position: absolute; top: 50%; right: 25px; 
+    position: absolute;
+    top: 50%;
+    right: 25px; 
     transform: translateY(-50%);
-    display: flex; flex-direction: column; gap: 15px;
-    width: 55%; max-width: 250px; 
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 250px; 
+    width: 55%;
 }
 
 .trait-tag {
@@ -126,19 +206,30 @@ body {
     padding: 12px 10px;
     font-size: clamp(0.75rem, 2vw, 1.1rem);
     font-weight: bold;
+    line-height: 1.25;
+    box-sizing: border-box;
+    opacity: 0;
+    transform: translateX(30px);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     backdrop-filter: blur(5px);
 }
 
-/* --- RESPONSIVE --- */
+.trait-tag.show { opacity: 1; transform: translateX(0); }
+.trait-tag span { font-size: 0.55rem; display: block; opacity: 0.7; margin-bottom: 2px; }
+
+/* --- RESPONSIVE OPTIMIZATIONS --- */
 @media (orientation: landscape) {
-    .top-left-data { top: 35px; left: 60px; font-size: 0.85rem; }
-    .trait-list { right: 60px; gap: 8px; }
+    .top-left-data { top: 35px; left: 60px; max-width: 50%; font-size: clamp(0.5rem, 1.5vw, 0.85rem); }
+    .bottom-left-data { bottom: 35px; left: 40px; font-size: clamp(0.5rem, 1.5vw, 0.85rem); }
+    .trait-list { right: 60px; gap: 8px; width: 60%; }
+    .trait-tag { padding: 8px 14px; font-size: clamp(0.5rem, 1.5vw, 0.85rem); }
 }
 
 @media (max-height: 480px) {
-    #percent { font-size: 11vh; }
-    .loader-text { font-size: 3.5vh; }
-}
-    #percent { font-size: 10vh; }
-    .loader-text { font-size: 3vh; letter-spacing: 2px; }
+    .loader-container { padding: 1vh 0; }
+    .seed-icon-header { margin-bottom: 1vh; }
+    #percent { font-size: 11vh; } /* Un poco más grande para compensar el poco alto */
+    .loader-text { letter-spacing: 2px; font-size: 3.5vh; }
+    .trait-list { gap: 5px; }
+    .trait-tag { padding: 5px 10px; }
 }
