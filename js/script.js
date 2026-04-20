@@ -36,7 +36,6 @@ const material = new THREE.MeshPhysicalMaterial({
 });
 
 const corn = new THREE.Mesh(geometry, material);
-// Ajuste de escala inicial
 corn.scale.set(0.65, 0.65, 0.65);
 scene.add(corn);
 
@@ -58,17 +57,52 @@ const lightSide = new THREE.PointLight(0x00fbff, 10);
 lightSide.position.set(-4, 2, 2);
 scene.add(lightSide);
 
+// --- LÓGICA DE INTERACCIÓN (GIRO + FRICCIÓN) ---
+let isDragging = false;
+let previousMouseX = 0;
+let rotationVelocity = 0; // Velocidad de inercia
+const friction = 0.95; // Qué tan rápido se frena (0.95 = suave)
+
+const startDragging = (e) => { 
+    isDragging = true; 
+    previousMouseX = e.touches ? e.touches[0].clientX : e.clientX;
+};
+
+const handleMove = (e) => {
+    if (!isDragging) return;
+    const currentX = e.touches ? e.touches[0].clientX : e.clientX;
+    const deltaX = currentX - previousMouseX;
+    
+    rotationVelocity = deltaX * 0.01; // El impulso que le das
+    corn.rotation.y += rotationVelocity;
+    previousMouseX = currentX;
+};
+
+const stopDragging = () => { isDragging = false; };
+
+window.addEventListener('mousedown', startDragging);
+window.addEventListener('touchstart', startDragging);
+window.addEventListener('mousemove', handleMove);
+window.addEventListener('touchmove', handleMove);
+window.addEventListener('mouseup', stopDragging);
+window.addEventListener('touchend', stopDragging);
+
 // --- ANIMACIÓN ---
 const seqText = document.getElementById('seq');
 
 function animate() {
     requestAnimationFrame(animate);
     
-    // Rotación suave del maíz
-    corn.rotation.y += 0.01;
+    if (!isDragging) {
+        // Aplicar fricción a la velocidad de giro manual
+        rotationVelocity *= friction;
+        // Combinar rotación automática base (0.01) con la inercia restante
+        corn.rotation.y += 0.005 + rotationVelocity;
+    }
+    
+    // Balanceo suave en X para que no sea rígido
     corn.rotation.x = Math.sin(Date.now() * 0.0005) * 0.15;
     
-    // Simulación de datos genéticos
     if (seqText) {
         seqText.innerText = Math.random().toFixed(4);
     }
@@ -76,32 +110,27 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-// --- LÓGICA DE DATOS DINÁMICOS (OPTIMIZACIÓN Y SEÑAL) ---
+// --- LÓGICA DE DATOS DINÁMICOS ---
 function updateYieldData() {
     const yieldElement = document.getElementById('yield-value');
     const signalElement = document.getElementById('signal-value');
     
     if (yieldElement) {
-        yieldElement.classList.add('data-updating'); // Llama a la animación de brillo en CSS
-        
+        yieldElement.classList.add('data-updating');
         let baseValue = 24.8;
         let variation = (Math.random() * 0.4 - 0.2);
         yieldElement.innerText = `+${(baseValue + variation).toFixed(1)}%`;
-        
-        setTimeout(() => { 
-            yieldElement.classList.remove('data-updating'); 
-        }, 500);
+        setTimeout(() => { yieldElement.classList.remove('data-updating'); }, 500);
     }
 
     if (signalElement) {
         let sig = Math.random() > 0.85 ? "4/5" : "5/5";
         signalElement.innerText = sig;
     }
-
     setTimeout(updateYieldData, 2000 + Math.random() * 2000);
 }
 
-// --- SISTEMA DE CARGA (SISTEMA DE REVELADO) ---
+// --- SISTEMA DE CARGA ---
 const loaderWrapper = document.getElementById('loader-wrapper');
 const loaderPath = document.querySelector('.loader-path');
 const percentText = document.getElementById('percent');
@@ -128,7 +157,7 @@ const interval = setInterval(() => {
         setTimeout(() => {
             if (loaderWrapper) loaderWrapper.classList.add('loader-hidden');
             revealLabels();
-            updateYieldData(); // Iniciar los datos dinámicos después de cargar
+            updateYieldData();
             animate();
         }, 800);
     }
@@ -142,23 +171,21 @@ const interval = setInterval(() => {
 function updateSize() {
     const width = window.innerWidth;
     const height = window.innerHeight;
-
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
 
-    // Ajuste dinámico de escala del maíz según pantalla
-    if (width < 480) { // Móviles Verticales (Samsung/iPhone)
+    if (width < 480) {
         corn.scale.set(0.55, 0.55, 0.55);
         corn.position.x = 0;
-    } else if (height < 500) { // Móviles Horizontales
+    } else if (height < 500) {
         corn.scale.set(0.42, 0.42, 0.42);
-        corn.position.x = -0.5; // Lo movemos un poco a la izquierda para el HUD
-    } else { // Escritorio o Pro Max Grande
+        corn.position.x = -0.5;
+    } else {
         corn.scale.set(0.65, 0.65, 0.65);
         corn.position.x = 0;
     }
 }
 
 window.addEventListener('resize', updateSize);
-updateSize(); // Ejecutar al inicio para ajustar según el dispositivo actual
+updateSize();
