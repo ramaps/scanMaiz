@@ -57,29 +57,62 @@ const lightSide = new THREE.PointLight(0x00fbff, 10);
 lightSide.position.set(-4, 2, 2);
 scene.add(lightSide);
 
-// --- LÓGICA DE INTERACCIÓN (GIRO + FRICCIÓN) ---
+// --- LÓGICA DE INTERACCIÓN AVANZADA (FINGER-SPIN + HUD CONTROL) ---
 let isDragging = false;
 let previousMouseX = 0;
-let rotationVelocity = 0; // Velocidad de inercia
-const friction = 0.95; // Qué tan rápido se frena (0.95 = suave)
+let previousMouseY = 0;
+let rotationVelocityX = 0; // Velocidad de inercia en eje X
+let rotationVelocityY = 0; // Velocidad de inercia en eje Y
+const friction = 0.96; // Fricción ligeramente más alta para una inercia más controlada
+
+// Referencias a las etiquetas (traits)
+const traits = document.querySelectorAll('.trait-tag');
 
 const startDragging = (e) => { 
     isDragging = true; 
+    
+    // Guardamos las coordenadas iniciales
     previousMouseX = e.touches ? e.touches[0].clientX : e.clientX;
+    previousMouseY = e.touches ? e.touches[0].clientY : e.clientY;
+
+    // --- OCULTAR ETIQUETAS INSTANTÁNEAMENTE ---
+    traits.forEach(trait => trait.classList.remove('show'));
 };
 
 const handleMove = (e) => {
     if (!isDragging) return;
-    const currentX = e.touches ? e.touches[0].clientX : e.clientX;
-    const deltaX = currentX - previousMouseX;
     
-    rotationVelocity = deltaX * 0.01; // El impulso que le das
-    corn.rotation.y += rotationVelocity;
+    const currentX = e.touches ? e.touches[0].clientX : e.clientX;
+    const currentY = e.touches ? e.touches[0].clientY : e.clientY;
+    
+    const deltaX = currentX - previousMouseX;
+    const deltaY = currentY - previousMouseY;
+    
+    // Rotar en X y Y basado en el movimiento del dedo
+    rotationVelocityX = deltaX * 0.008; // Sensibilidad del giro horizontal
+    rotationVelocityY = deltaY * 0.008; // Sensibilidad del giro vertical
+
+    corn.rotation.y += rotationVelocityX;
+    corn.rotation.x += rotationVelocityY;
+
     previousMouseX = currentX;
+    previousMouseY = currentY;
 };
 
-const stopDragging = () => { isDragging = false; };
+const stopDragging = () => { 
+    isDragging = false; 
+    
+    // --- REAPARECER ETIQUETAS AL SOLTAR CON PEQUEÑO RETRASO ---
+    // Esto da tiempo a que la inercia del maíz actúe un poco antes de mostrar datos
+    setTimeout(() => {
+        // Solo las mostramos si no hemos vuelto a tocar la pantalla
+        if (!isDragging) {
+            revealLabels(); // Llamamos a la misma función del cargador para que aparezcan en cascada
+        }
+    }, 600); // 600ms de retraso para el "recalibrado" visual
+};
 
+// Event Listeners (Soporte Mouse y Touch)
 window.addEventListener('mousedown', startDragging);
 window.addEventListener('touchstart', startDragging);
 window.addEventListener('mousemove', handleMove);
@@ -94,15 +127,20 @@ function animate() {
     requestAnimationFrame(animate);
     
     if (!isDragging) {
-        // Aplicar fricción a la velocidad de giro manual
-        rotationVelocity *= friction;
-        // Combinar rotación automática base (0.01) con la inercia restante
-        corn.rotation.y += 0.005 + rotationVelocity;
+        // 1. Aplicar fricción a las velocidades de inercia
+        rotationVelocityX *= friction;
+        rotationVelocityY *= friction;
+        
+        // 2. Combinar rotación automática base (0.005) con la inercia restante en Y
+        corn.rotation.y += 0.005 + rotationVelocityX;
+
+        // 3. Suavizar la rotación en X de vuelta al balanceo natural (reestabilización)
+        // Usamos una interpolación lineal simple (lerp)
+        const targetXBalance = Math.sin(Date.now() * 0.0005) * 0.15; // El movimiento natural
+        corn.rotation.x += (targetXBalance + rotationVelocityY - corn.rotation.x) * 0.1;
     }
-    
-    // Balanceo suave en X para que no sea rígido
-    corn.rotation.x = Math.sin(Date.now() * 0.0005) * 0.15;
-    
+    // Mientras arrastras (isDragging), el movimiento lo controla handleMove
+
     if (seqText) {
         seqText.innerText = Math.random().toFixed(4);
     }
@@ -130,20 +168,23 @@ function updateYieldData() {
     setTimeout(updateYieldData, 2000 + Math.random() * 2000);
 }
 
-// --- SISTEMA DE CARGA ---
+// --- SISTEMA DE CARGA Y REVELADO ---
 const loaderWrapper = document.getElementById('loader-wrapper');
 const loaderPath = document.querySelector('.loader-path');
 const percentText = document.getElementById('percent');
 
+// Modificada para ocultar todas antes de empezar la cascada (por seguridad al reaparecer)
 function revealLabels() {
+    traits.forEach(trait => trait.classList.remove('show')); // Limpieza inicial
+    
     setTimeout(() => {
         for(let i = 1; i <= 4; i++) {
             setTimeout(() => {
                 const el = document.getElementById(`t${i}`);
                 if (el) el.classList.add('show');
-            }, i * 500);
+            }, (i - 1) * 400); // Cascada más rápida (400ms entre cada una)
         }
-    }, 500);
+    }, 100); // 100ms de retraso inicial
 }
 
 let loadProgress = 0;
@@ -156,7 +197,7 @@ const interval = setInterval(() => {
         
         setTimeout(() => {
             if (loaderWrapper) loaderWrapper.classList.add('loader-hidden');
-            revealLabels();
+            revealLabels(); // Primer revelado después de cargar
             updateYieldData();
             animate();
         }, 800);
