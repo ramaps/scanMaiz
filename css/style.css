@@ -217,6 +217,18 @@ body {
 .trait-tag.show { opacity: 1; transform: translateX(0); }
 .trait-tag span { font-size: 0.55rem; display: block; opacity: 0.7; margin-bottom: 2px; }
 
+/* --- ANIMACIÓN DINÁMICA DE DATOS --- */
+#yield-value {
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    display: inline-block; /* Asegura que el brillo no se corte */
+}
+
+/* Clase que se activa desde JS para el parpadeo */
+.data-updating {
+    color: #ffffff !important;
+    text-shadow: 0 0 15px var(--stark-cyan), 0 0 5px #ffffff !important;
+}
+
 /* --- RESPONSIVE OPTIMIZATIONS --- */
 @media (orientation: landscape) {
     .top-left-data { top: 35px; left: 60px; max-width: 50%; font-size: clamp(0.5rem, 1.5vw, 0.85rem); }
