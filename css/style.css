@@ -49,23 +49,6 @@ body {
     max-width: 160px;
     height: calc(10vh * var(--logo-scale));
     margin-bottom: 2vh;
-    background-color: var(--stark-cyan);
-    
-    -webkit-mask-image: url('../img/dekalb_logo.svg');
-    mask-image: url('../img/dekalb_logo.svg');
-    -webkit-mask-size: contain;
-    mask-repeat: no-repeat;
-    mask-position: center;
-
-    filter: drop-shadow(0 0 12px var(--stark-cyan));
-    animation: pulse-stark 2s infinite ease-in-out;
-}
-
-/* ANILLO DE CARGA ADAPTABLE */
-.circular-loader { 
-    width: calc(32vh * var(--loader-scale)); 
-    height: calc(32vh * var(--loader-scale)); 
-    max-width: 220px;
     max-height: 220px;
     min-width: 110px;
     min-height: 110px;
@@ -90,6 +73,7 @@ body {
     transition: stroke-dashoffset 0.1s linear;
 }
 
+/* --- PORCENTAJE (ESTILO ORIGINAL RECUPERADO) --- */
 /* --- PORCENTAJE --- */
 #percent {
     font-family: 'Segoe UI', 'Segoe UI', 'Impact', 'Arial Black', sans-serif; /* Restaurada */
