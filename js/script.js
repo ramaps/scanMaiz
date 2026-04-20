@@ -36,6 +36,7 @@ const material = new THREE.MeshPhysicalMaterial({
 });
 
 const corn = new THREE.Mesh(geometry, material);
+// Ajuste de escala inicial
 corn.scale.set(0.65, 0.65, 0.65);
 scene.add(corn);
 
@@ -75,7 +76,32 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-// --- SISTEMA DE CARGA (SILENCIOSO Y MEJORADO) ---
+// --- LÓGICA DE DATOS DINÁMICOS (OPTIMIZACIÓN Y SEÑAL) ---
+function updateYieldData() {
+    const yieldElement = document.getElementById('yield-value');
+    const signalElement = document.getElementById('signal-value');
+    
+    if (yieldElement) {
+        yieldElement.classList.add('data-updating'); // Llama a la animación de brillo en CSS
+        
+        let baseValue = 24.8;
+        let variation = (Math.random() * 0.4 - 0.2);
+        yieldElement.innerText = `+${(baseValue + variation).toFixed(1)}%`;
+        
+        setTimeout(() => { 
+            yieldElement.classList.remove('data-updating'); 
+        }, 500);
+    }
+
+    if (signalElement) {
+        let sig = Math.random() > 0.85 ? "4/5" : "5/5";
+        signalElement.innerText = sig;
+    }
+
+    setTimeout(updateYieldData, 2000 + Math.random() * 2000);
+}
+
+// --- SISTEMA DE CARGA (SISTEMA DE REVELADO) ---
 const loaderWrapper = document.getElementById('loader-wrapper');
 const loaderPath = document.querySelector('.loader-path');
 const percentText = document.getElementById('percent');
@@ -92,33 +118,47 @@ function revealLabels() {
 }
 
 let loadProgress = 0;
-// Intervalo de 100ms para una carga más pausada y técnica
 const interval = setInterval(() => {
-    // Incrementos más pequeños para estirar la animación
     loadProgress += Math.random() * 4.5; 
     
     if (loadProgress >= 100) {
         loadProgress = 100;
         clearInterval(interval);
         
-        // ELIMINADO: Ya no hay llamada a playStartAudio();
-        
         setTimeout(() => {
             if (loaderWrapper) loaderWrapper.classList.add('loader-hidden');
             revealLabels();
+            updateYieldData(); // Iniciar los datos dinámicos después de cargar
             animate();
         }, 800);
     }
     
-    // Sincronización con el nuevo viewBox 120 (circunferencia ~283)
     const offset = 283 - (loadProgress / 100) * 283;
     if (loaderPath) loaderPath.style.strokeDashoffset = offset;
     if (percentText) percentText.innerText = Math.floor(loadProgress) + "%";
 }, 100);
 
-// RESPONSIVE
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+// --- RESPONSIVE INTELIGENTE ---
+function updateSize() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
+    renderer.setSize(width, height);
+
+    // Ajuste dinámico de escala del maíz según pantalla
+    if (width < 480) { // Móviles Verticales (Samsung/iPhone)
+        corn.scale.set(0.55, 0.55, 0.55);
+        corn.position.x = 0;
+    } else if (height < 500) { // Móviles Horizontales
+        corn.scale.set(0.42, 0.42, 0.42);
+        corn.position.x = -0.5; // Lo movemos un poco a la izquierda para el HUD
+    } else { // Escritorio o Pro Max Grande
+        corn.scale.set(0.65, 0.65, 0.65);
+        corn.position.x = 0;
+    }
+}
+
+window.addEventListener('resize', updateSize);
+updateSize(); // Ejecutar al inicio para ajustar según el dispositivo actual
