@@ -34,13 +34,14 @@ body {
     color: var(--stark-cyan); 
 }
 
-/* NUEVO: Contenedor del Logo Dekalb en el Loader */
+/* NUEVO: Contenedor del Logo Dekalb */
 .seed-icon-header {
-    width: 120px; 
+    width: 120px; /* Tamaño optimizado para el logo horizontal de Dekalb */
     height: 60px;
     margin-bottom: 20px;
-    background-color: var(--stark-cyan);
+    background-color: var(--stark-cyan); /* Usa tu variable de color */
     
+    /* Ruta a la carpeta img */
     -webkit-mask-image: url('../img/dekalb_logo.svg');
     mask-image: url('../img/dekalb_logo.svg');
     
@@ -49,6 +50,7 @@ body {
     mask-repeat: no-repeat;
     mask-position: center;
 
+    /* Brillo Stark */
     filter: drop-shadow(0 0 12px var(--stark-cyan));
     animation: pulse-stark 2s infinite ease-in-out;
 }
@@ -104,26 +106,7 @@ body {
     pointer-events: none; 
 }
 
-/* --- CAPAS DE FONDO CON GRILLA REPETITIVA --- */
-#grid {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    
-    /* Triple fondo: Logo + Líneas Horizontales + Líneas Verticales */
-    background-image: 
-        url('../img/dekalb_logo.svg'), 
-        linear-gradient(var(--stark-glow) 1px, transparent 1px),
-        linear-gradient(90deg, var(--stark-glow) 1px, transparent 1px);
-    
-    /* El logo mide 30px dentro de cuadros de 80px */
-    background-size: 30px 30px, 80px 80px, 80px 80px;
-    background-position: center, 0 0, 0 0;
-    background-repeat: repeat;
-    
-    opacity: 0.12; /* Opacidad baja para que sea un detalle táctico sutil */
-    z-index: 1;
-}
-
+/* --- CAPAS DE FONDO --- */
 #scanline {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -131,6 +114,16 @@ body {
     background-size: 100% 4px;
     z-index: 100;
     pointer-events: none;
+}
+
+#grid {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: linear-gradient(var(--stark-glow) 1px, transparent 1px),
+                      linear-gradient(90deg, var(--stark-glow) 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.15;
+    z-index: 1;
 }
 
 #canvas-3d { 
@@ -218,6 +211,9 @@ body {
 }
 
 @media (max-height: 420px) {
+    .trait-list { gap: 5px; }
+    .trait-tag { padding: 5px 10px; }
+}dia (max-height: 420px) {
     .trait-list { gap: 5px; }
     .trait-tag { padding: 5px 10px; }
 }
