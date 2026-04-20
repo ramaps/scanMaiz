@@ -36,6 +36,7 @@ const material = new THREE.MeshPhysicalMaterial({
 });
 
 const corn = new THREE.Mesh(geometry, material);
+// Ajuste de escala inicial
 corn.scale.set(0.65, 0.65, 0.65);
 scene.add(corn);
 
@@ -57,90 +58,17 @@ const lightSide = new THREE.PointLight(0x00fbff, 10);
 lightSide.position.set(-4, 2, 2);
 scene.add(lightSide);
 
-// --- LÓGICA DE INTERACCIÓN AVANZADA (FINGER-SPIN + HUD CONTROL) ---
-let isDragging = false;
-let previousMouseX = 0;
-let previousMouseY = 0;
-let rotationVelocityX = 0; // Velocidad de inercia en eje X
-let rotationVelocityY = 0; // Velocidad de inercia en eje Y
-const friction = 0.96; // Fricción ligeramente más alta para una inercia más controlada
-
-// Referencias a las etiquetas (traits)
-const traits = document.querySelectorAll('.trait-tag');
-
-const startDragging = (e) => { 
-    isDragging = true; 
-    
-    // Guardamos las coordenadas iniciales
-    previousMouseX = e.touches ? e.touches[0].clientX : e.clientX;
-    previousMouseY = e.touches ? e.touches[0].clientY : e.clientY;
-
-    // --- OCULTAR ETIQUETAS INSTANTÁNEAMENTE ---
-    traits.forEach(trait => trait.classList.remove('show'));
-};
-
-const handleMove = (e) => {
-    if (!isDragging) return;
-    
-    const currentX = e.touches ? e.touches[0].clientX : e.clientX;
-    const currentY = e.touches ? e.touches[0].clientY : e.clientY;
-    
-    const deltaX = currentX - previousMouseX;
-    const deltaY = currentY - previousMouseY;
-    
-    // Rotar en X y Y basado en el movimiento del dedo
-    rotationVelocityX = deltaX * 0.008; // Sensibilidad del giro horizontal
-    rotationVelocityY = deltaY * 0.008; // Sensibilidad del giro vertical
-
-    corn.rotation.y += rotationVelocityX;
-    corn.rotation.x += rotationVelocityY;
-
-    previousMouseX = currentX;
-    previousMouseY = currentY;
-};
-
-const stopDragging = () => { 
-    isDragging = false; 
-    
-    // --- REAPARECER ETIQUETAS AL SOLTAR CON PEQUEÑO RETRASO ---
-    // Esto da tiempo a que la inercia del maíz actúe un poco antes de mostrar datos
-    setTimeout(() => {
-        // Solo las mostramos si no hemos vuelto a tocar la pantalla
-        if (!isDragging) {
-            revealLabels(); // Llamamos a la misma función del cargador para que aparezcan en cascada
-        }
-    }, 600); // 600ms de retraso para el "recalibrado" visual
-};
-
-// Event Listeners (Soporte Mouse y Touch)
-window.addEventListener('mousedown', startDragging);
-window.addEventListener('touchstart', startDragging);
-window.addEventListener('mousemove', handleMove);
-window.addEventListener('touchmove', handleMove);
-window.addEventListener('mouseup', stopDragging);
-window.addEventListener('touchend', stopDragging);
-
 // --- ANIMACIÓN ---
 const seqText = document.getElementById('seq');
 
 function animate() {
     requestAnimationFrame(animate);
     
-    if (!isDragging) {
-        // 1. Aplicar fricción a las velocidades de inercia
-        rotationVelocityX *= friction;
-        rotationVelocityY *= friction;
-        
-        // 2. Combinar rotación automática base (0.005) con la inercia restante en Y
-        corn.rotation.y += 0.005 + rotationVelocityX;
-
-        // 3. Suavizar la rotación en X de vuelta al balanceo natural (reestabilización)
-        // Usamos una interpolación lineal simple (lerp)
-        const targetXBalance = Math.sin(Date.now() * 0.0005) * 0.15; // El movimiento natural
-        corn.rotation.x += (targetXBalance + rotationVelocityY - corn.rotation.x) * 0.1;
-    }
-    // Mientras arrastras (isDragging), el movimiento lo controla handleMove
-
+    // Rotación suave del maíz
+    corn.rotation.y += 0.01;
+    corn.rotation.x = Math.sin(Date.now() * 0.0005) * 0.15;
+    
+    // Simulación de datos genéticos
     if (seqText) {
         seqText.innerText = Math.random().toFixed(4);
     }
@@ -148,43 +76,45 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-// --- LÓGICA DE DATOS DINÁMICOS ---
+// --- LÓGICA DE DATOS DINÁMICOS (OPTIMIZACIÓN Y SEÑAL) ---
 function updateYieldData() {
     const yieldElement = document.getElementById('yield-value');
     const signalElement = document.getElementById('signal-value');
     
     if (yieldElement) {
-        yieldElement.classList.add('data-updating');
+        yieldElement.classList.add('data-updating'); // Llama a la animación de brillo en CSS
+        
         let baseValue = 24.8;
         let variation = (Math.random() * 0.4 - 0.2);
         yieldElement.innerText = `+${(baseValue + variation).toFixed(1)}%`;
-        setTimeout(() => { yieldElement.classList.remove('data-updating'); }, 500);
+        
+        setTimeout(() => { 
+            yieldElement.classList.remove('data-updating'); 
+        }, 500);
     }
 
     if (signalElement) {
         let sig = Math.random() > 0.85 ? "4/5" : "5/5";
         signalElement.innerText = sig;
     }
+
     setTimeout(updateYieldData, 2000 + Math.random() * 2000);
 }
 
-// --- SISTEMA DE CARGA Y REVELADO ---
+// --- SISTEMA DE CARGA (SISTEMA DE REVELADO) ---
 const loaderWrapper = document.getElementById('loader-wrapper');
 const loaderPath = document.querySelector('.loader-path');
 const percentText = document.getElementById('percent');
 
-// Modificada para ocultar todas antes de empezar la cascada (por seguridad al reaparecer)
 function revealLabels() {
-    traits.forEach(trait => trait.classList.remove('show')); // Limpieza inicial
-    
     setTimeout(() => {
         for(let i = 1; i <= 4; i++) {
             setTimeout(() => {
                 const el = document.getElementById(`t${i}`);
                 if (el) el.classList.add('show');
-            }, (i - 1) * 400); // Cascada más rápida (400ms entre cada una)
+            }, i * 500);
         }
-    }, 100); // 100ms de retraso inicial
+    }, 500);
 }
 
 let loadProgress = 0;
@@ -197,8 +127,8 @@ const interval = setInterval(() => {
         
         setTimeout(() => {
             if (loaderWrapper) loaderWrapper.classList.add('loader-hidden');
-            revealLabels(); // Primer revelado después de cargar
-            updateYieldData();
+            revealLabels();
+            updateYieldData(); // Iniciar los datos dinámicos después de cargar
             animate();
         }, 800);
     }
@@ -212,21 +142,23 @@ const interval = setInterval(() => {
 function updateSize() {
     const width = window.innerWidth;
     const height = window.innerHeight;
+
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
 
-    if (width < 480) {
+    // Ajuste dinámico de escala del maíz según pantalla
+    if (width < 480) { // Móviles Verticales (Samsung/iPhone)
         corn.scale.set(0.55, 0.55, 0.55);
         corn.position.x = 0;
-    } else if (height < 500) {
+    } else if (height < 500) { // Móviles Horizontales
         corn.scale.set(0.42, 0.42, 0.42);
-        corn.position.x = -0.5;
-    } else {
+        corn.position.x = -0.5; // Lo movemos un poco a la izquierda para el HUD
+    } else { // Escritorio o Pro Max Grande
         corn.scale.set(0.65, 0.65, 0.65);
         corn.position.x = 0;
     }
 }
 
 window.addEventListener('resize', updateSize);
-updateSize();
+updateSize(); // Ejecutar al inicio para ajustar según el dispositivo actual
