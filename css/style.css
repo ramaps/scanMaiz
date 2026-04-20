@@ -92,7 +92,7 @@ body {
 
 /* --- PORCENTAJE (ESTILO ORIGINAL RECUPERADO) --- */
 #percent {
-    font-family: 'Segoe UI', 'Courier New', monospace; /* Restaurada */
+    font-family: 'Segoe UI', 'Segoe UI', 'Impact', 'Arial Black', sans-serif; /* Restaurada */
     font-size: calc(9vh * var(--text-scale)); 
     margin-top: 1.5vh;
     font-weight: 900; /* Super negrita */
