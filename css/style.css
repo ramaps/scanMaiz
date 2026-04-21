@@ -229,6 +229,12 @@ body {
     text-shadow: 0 0 15px var(--stark-cyan), 0 0 5px #ffffff !important;
 }
 
+/* Oculta las etiquetas durante el arrastre, respetando la transición original */
+.trait-tag.drag-hide {
+    opacity: 0 !important;
+    transition: opacity 0.2s ease;
+}
+
 /* --- RESPONSIVE OPTIMIZATIONS --- */
 @media (orientation: landscape) {
     .top-left-data { top: 35px; left: 60px; max-width: 50%; font-size: clamp(0.5rem, 1.5vw, 0.85rem); }
